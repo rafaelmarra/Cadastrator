@@ -3,6 +3,8 @@ package com.marrapps.cadastrator.fragments
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.TextInputEditText
 import android.support.v4.app.Fragment
@@ -21,10 +23,12 @@ import com.marrapps.cadastrator.model.Entry
 import com.marrapps.cadastrator.model.dao.CepDAO
 import kotlinx.android.synthetic.main.fragment_entry.view.*
 
+
 class EntryFragment : Fragment(), ServiceListener {
 
     private lateinit var btnCheckCep: Button
     private lateinit var btnGo: Button
+    private lateinit var btnMap: Button
     private lateinit var txtAddress: TextView
     private lateinit var txtNeighbourhood: TextView
     private lateinit var txtCity: TextView
@@ -80,7 +84,7 @@ class EntryFragment : Fragment(), ServiceListener {
 
         btnGo.setOnClickListener {
 
-            if (isFillingCorrect()){
+            if (isFillingCorrect()) {
 
                 val entry = Entry()
 
@@ -111,8 +115,27 @@ class EntryFragment : Fragment(), ServiceListener {
 
                 onGoClickListener.onGoClick()
 
-            }else{
+            } else {
                 Toast.makeText(context, "Preencha todos os campos corretamente", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        btnMap.setOnClickListener {
+
+            if (isCepVerified && !txtNumber.text.isNullOrBlank()) {
+
+                val gmmIntentUri = Uri.parse("geo:0,0?q=" + txtNumber.text + txtAddress.text + txtCity.text)
+                val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                mapIntent.setPackage("com.google.android.apps.maps")
+                startActivity(mapIntent)
+
+            } else {
+                Toast.makeText(
+                    context,
+                    "Para consultar o mapa, primeiro verifique o CEP e preencha o número",
+                    Toast.LENGTH_LONG
+                ).show()
+
             }
         }
 
@@ -184,6 +207,7 @@ class EntryFragment : Fragment(), ServiceListener {
         txtNumber = view.txtImputNumber
         txtMore = view.txtImputMore
         btnGo = view.btnGo
+        btnMap = view.btnEditMap
     }
 
     private fun isFillingCorrect(): Boolean {
@@ -202,13 +226,13 @@ class EntryFragment : Fragment(), ServiceListener {
             txtNumber.text != null &&
             txtNumber.text.toString().isNotBlank() &&
             isCepVerified
-        ){
+        ) {
             return true
         }
         return false
     }
 
-    interface OnGoClickListener{
+    interface OnGoClickListener {
 
         fun onGoClick()
     }
