@@ -10,7 +10,7 @@
 
     <ImageView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" app:srcCompat="@drawable/logo" android:id="@+id/imgLogo"
+            android:layout_height="wrap_content" app:srcCompat="@drawable/icon" android:id="@+id/imgLogo"
             app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toBottomOf="parent"
             android:scaleType="fitCenter"/>

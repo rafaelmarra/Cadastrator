@@ -3,6 +3,8 @@ package com.marrapps.cadastrator.fragments
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.TextInputEditText
 import android.support.v4.app.Fragment
@@ -39,6 +41,7 @@ class EditFragment : Fragment(), ServiceListener {
     private lateinit var btnCheckCep: Button
     private lateinit var btnGo: Button
     private lateinit var btnDelete: Button
+    private lateinit var btnMap: Button
     private lateinit var txtAddress: TextView
     private lateinit var txtNeighbourhood: TextView
     private lateinit var txtCity: TextView
@@ -75,7 +78,7 @@ class EditFragment : Fragment(), ServiceListener {
 
         fillTexts()
 
-        btnCheckCep.setOnClickListener{
+        btnCheckCep.setOnClickListener {
             isCepVerified = true
 
             if (txtCep.text == null || txtCep.text.toString().length != 8) {
@@ -95,7 +98,7 @@ class EditFragment : Fragment(), ServiceListener {
 
         btnGo.setOnClickListener {
 
-            if (isFillingCorrect()){
+            if (isFillingCorrect()) {
 
                 fillEntry()
 
@@ -108,12 +111,12 @@ class EditFragment : Fragment(), ServiceListener {
 
                 onGoClickListener.onGoBackClick()
 
-            }else{
+            } else {
                 Toast.makeText(context, "Preencha todos os campos corretamente", Toast.LENGTH_SHORT).show()
             }
         }
 
-        btnDelete.setOnClickListener{
+        btnDelete.setOnClickListener {
 
             val task = Runnable {
                 entryDatabase?.entryDao()?.delete(entry)
@@ -123,6 +126,25 @@ class EditFragment : Fragment(), ServiceListener {
             Toast.makeText(context, "Cadastro deletado", Toast.LENGTH_SHORT).show()
 
             onGoClickListener.onGoBackClick()
+        }
+
+        btnMap.setOnClickListener {
+
+            if (isCepVerified && !txtNumber.text.isNullOrBlank()) {
+
+                val gmmIntentUri = Uri.parse("geo:0,0?q=" + txtNumber.text + txtAddress.text + txtCity.text)
+                val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                mapIntent.setPackage("com.google.android.apps.maps")
+                startActivity(mapIntent)
+
+            } else {
+                Toast.makeText(
+                    context,
+                    "Para consultar o mapa, primeiro verifique o CEP e preencha o número",
+                    Toast.LENGTH_LONG
+                ).show()
+
+            }
         }
 
         return view
@@ -144,6 +166,7 @@ class EditFragment : Fragment(), ServiceListener {
         txtMore = view.txtEditMore
         btnGo = view.btnEditSave
         btnDelete = view.btnEditDelete
+        btnMap = view.btnEditMap
     }
 
     private fun fillTexts() {
@@ -212,7 +235,7 @@ class EditFragment : Fragment(), ServiceListener {
             txtNumber.text != null &&
             txtNumber.text.toString().isNotBlank() &&
             isCepVerified
-        ){
+        ) {
             return true
         }
         return false
@@ -236,7 +259,7 @@ class EditFragment : Fragment(), ServiceListener {
         }
     }
 
-    interface OnGoClickListener{
+    interface OnGoClickListener {
 
         fun onGoBackClick()
     }
